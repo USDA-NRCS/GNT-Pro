@@ -1,0 +1,13 @@
+__pycache__/
+Index/
+*_index/
+ImportLog/
+GpMessages/
+HEL_Text_Files/
+SCRATCH.gdb/
+venv/
+.backups/
+.vscode/
+*.lock
+.pyHistory
+test.py
