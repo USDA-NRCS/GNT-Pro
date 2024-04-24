@@ -1,0 +1,10 @@
+﻿CAV_ID,IS_RETIRED,FIELD_GROUP,SUBTYPE,SUBTYPE_NAME,CV_TYPE1,CV_VALUE1,DESCRIPTION1,CV_TYPE2,CV_VALUE2,DESCRIPTION2
+1,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Property Boundary,Property Boundary
+2,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Public Road,Public Road
+3,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Intermittent Stream/Arroyo,Intermittent Stream/Arroyo
+4,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Losing Stream,Losing Stream
+5,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Perennial Stream,Perennial Stream
+6,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,River/Waterway/Canal,River/Waterway/Canal
+7,false,CategoryType,0,,3,Water Control Structures,Water Control Structures,3,Drainage Ditch,Drainage Ditch
+8,false,CategoryType,0,,3,Water Control Structures,Water Control Structures,3,Grassed Waterway Centerline,Grassed Waterway Centerline
+9,false,CategoryType,0,,3,Water Control Structures,Water Control Structures,3,Roadside Ditch,Roadside Ditch

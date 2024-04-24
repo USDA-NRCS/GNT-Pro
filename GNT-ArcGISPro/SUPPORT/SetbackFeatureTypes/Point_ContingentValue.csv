@@ -1,0 +1,19 @@
+﻿CAV_ID,IS_RETIRED,FIELD_GROUP,SUBTYPE,SUBTYPE_NAME,CV_TYPE1,CV_VALUE1,DESCRIPTION1,CV_TYPE2,CV_VALUE2,DESCRIPTION2
+1,false,CategoryType,0,,3,Other Features,Other Features,3,Cave,Cave
+2,false,CategoryType,0,,3,Other Features,Other Features,3,Developed Spring,Developed Spring
+3,false,CategoryType,0,,3,Other Features,Other Features,3,Other Surface-Groundwater Connections,Other Surface-Groundwater Connections
+4,false,CategoryType,0,,3,Other Features,Other Features,3,Rock Outcrop,Rock Outcrop
+5,false,CategoryType,0,,3,Other Features,Other Features,3,Sinkhole,Sinkhole
+6,false,CategoryType,0,,3,Other Features,Other Features,3,Undeveloped Spring,Undeveloped Spring
+7,false,CategoryType,0,,3,Water Control Structures,Water Control Structures,3,Agricultural Drainage Well,Agricultural Drainage Well
+8,false,CategoryType,0,,3,Water Control Structures,Water Control Structures,3,Open Tile/Drainage Inlet,Open Tile/Drainage Inlet
+9,false,CategoryType,0,,3,Water Control Structures,Water Control Structures,3,Plugged Tile/Drainage Inlet,Plugged Tile/Drainage Inlet
+10,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Abandoned Well,Abandoned Well
+11,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Agricultural Well,Agricultural Well
+12,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Cistern,Cistern
+13,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Other Wells,Other Wells
+14,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Plugged Well,Plugged Well
+15,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Private Drinking Water Intake Structure,Private Drinking Water Intake Structure
+16,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Private Drinking Water Well,Private Drinking Water Well
+17,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Public Drinking Water Intake Structure,Public Drinking Water Intake Structure
+18,false,CategoryType,0,,3,Wells & Other Water Intake Structures,Wells & Other Water Intake Structures,3,Public Drinking Water Well,Public Drinking Water Well

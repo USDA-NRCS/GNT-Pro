@@ -1,0 +1,20 @@
+﻿CAV_ID,IS_RETIRED,FIELD_GROUP,SUBTYPE,SUBTYPE_NAME,CV_TYPE1,CV_VALUE1,DESCRIPTION1,CV_TYPE2,CV_VALUE2,DESCRIPTION2
+1,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Business (non-owned),Business (non-owned)
+2,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Business (owned),Business (owned)
+3,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Incorporated Area,Incorporated Area
+4,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Public Use Area,Public Use Area
+5,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Public Use Facility,Public Use Facility
+6,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Residence (non-owned),Residence (non-owned)
+7,false,CategoryType,0,,3,Facilities/Roads,Facilities/Roads,3,Residence (owned),Residence (owned)
+8,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Agricultural Drinking Water Lake/Impoundment,Agricultural Drinking Water Lake/Impoundment
+9,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Lake,Lake
+10,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Private Drinking Water Lake/Impoundment,Private Drinking Water Lake/Impoundment
+11,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Private Impoundment (no outlet),Private Impoundment (no outlet)
+12,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Public Drinking Water Lake/Impoundment,Public Drinking Water Lake/Impoundment
+13,false,CategoryType,0,,3,Lakes and Streams,Lakes and Streams,3,Water Impoundment,Water Impoundment
+14,false,CategoryType,0,,3,Other Features,Other Features,3,Designated Wetland,Designated Wetland
+15,false,CategoryType,0,,3,Other Features,Other Features,3,Estuary,Estuary
+16,false,CategoryType,0,,3,Other Features,Other Features,3,Mine or Quarry,Mine or Quarry
+17,false,CategoryType,0,,3,Other Features,Other Features,3,Ocean,Ocean
+18,false,CategoryType,0,,3,Other Features,Other Features,3,Other Wetland,Other Wetland
+19,false,CategoryType,0,,3,Water Control Structures,Water Control Structures,3,Water/Sediment Control Basin,Water/Sediment Control Basin

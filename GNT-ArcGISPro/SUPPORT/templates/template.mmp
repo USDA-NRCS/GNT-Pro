@@ -1,0 +1,113 @@
+; Manure Management Plan file - do not modify.
+
+[PlanInfo]
+FileVers=1
+Source={{ mmp_version }}
+RevDate={{ run_date  }}
+RevTime={{ run_time }}
+InitLookup={{ admin_data['State'] }}
+InitDate={{ mmi_RevDate }}
+SoilDate={{ mms_RevDate }}
+R2Db=
+R2Climate=
+R2SoilSurv=
+PlanYears={{ admin_data['PlanYears'] }}
+Title=
+Author=
+Company=
+Comments=
+
+
+[Operation]
+Operation={{ admin_data['Operation'] }}
+Address={{ admin_data['Address'] }}
+Town={{ admin_data['Town'] }}
+State={{ admin_data['State'] }}
+Zip={{ admin_data['Zip'] }}
+Contact={{ admin_data['Contact'] }}
+OffPhone={{ admin_data['OffPhone'] }}
+HomePhone={{ admin_data['HomePhone'] }}
+EMail={{ admin_data['EMail'] }}
+Notes={{ admin_data['Notes'] }}
+CntyCode={{ admin_data['CntyCode'] }}
+StartPlnYr={{ admin_data['StartPlnYr'] }}
+StartPlnMo={{ admin_data['StartPlnMo'] }}
+
+{% for field in gnt_fields %}
+[Field={{ field }}]
+ID={{ gnt_fields[field]['ID'] }}
+SubID={{ gnt_fields[field]['SubID'] }}
+Size={{ gnt_fields[field]['Size'] }}
+SpreadSize={{ gnt_fields[field]['SpreadSize'] }}
+DistToStor=
+CntyCode=
+SoilKey={{ gnt_fields[field]['SoilKey'] }}
+Slope=
+Irrigated=
+NotOwned=
+WtrshdHuc=
+FarmID={{ gnt_fields[field]['FarmID'] }}
+FSAFarm={{ gnt_fields[field]['FSAFarm'] }}
+FSATract={{ gnt_fields[field]['FSATract'] }}
+FSAField={{ gnt_fields[field]['FSAField'] }}
+Notes=
+DistToWtr=
+WaterDef=
+SlopeLen=
+HasRRP=
+BufWidth=
+DrainDef=
+AnnManured=
+NotManured=
+ErosionWtr=
+ErosionWnd=
+ErosionIrr=
+ErosionGul=
+ErosionEph=
+MiscData1=
+MiscData2=
+MiscData3=
+MiscData4=
+MiscData5=
+MiscData6=
+MiscData7=
+MiscData8=
+PIndex=
+AssesNotes=
+SoilTestYr=2024
+OM=
+P=
+PTestDef=
+K=
+Mg=
+Ca=
+Na=
+Al=
+Lime=
+InLbA=
+SoilpH=
+BufferpH=
+TargetpH=
+CEC=
+NO3N=
+NO3NLevel1=
+NO3NDepth1=
+NO3NLevel2=
+NO3NDepth2=
+NO3NLevel3=
+NO3NDepth3=
+NO3NLevel4=
+NO3NDepth4=
+NO3NInCm=
+NO3NAdjFct=
+EC=
+SO4S=
+TestNotes=
+R2RockCov=
+R2Contour=
+R2Strip=
+R2Terrace=
+R2Burial=
+R2Notes=
+
+{% endfor %}

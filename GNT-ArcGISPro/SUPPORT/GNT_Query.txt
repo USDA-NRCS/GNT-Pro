@@ -1,0 +1,229 @@
+-- This part of the query will need to reference the temporary table names used in the initial geometry query:
+-- #AoiTable
+-- #AoiAcres
+-- #AoiSoils
+-- #AoiSoils2
+-- #AoiSoils3
+
+-- #MapunitTbl table contains mapunit information for the entire AOI
+CREATE TABLE #MapunitTbl
+    ( areasymbol VARCHAR(20),
+    spatialver INT,
+    musym VARCHAR(6),
+    muname VARCHAR(240),
+    mukind VARCHAR(254),
+    lkey INT,
+    mukey INT,)
+;
+ 
+-- #M4 table contains Component level data with cokey, comppct_r and mapunit sum-of-comppct_r (major components only)
+CREATE TABLE #M4
+(   aoiid INT,
+    landunit VARCHAR(20),
+    musym VARCHAR(6),
+    mukey INT,
+    mapunit_acres FLOAT,
+    cokey INT,
+    compname VARCHAR(60),
+    comppct_r INT,
+    majcompflag VARCHAR(3),
+    otherphase VARCHAR(40),
+    localphase VARCHAR(40),
+    compkind VARCHAR(40),
+    slope_l FLOAT,
+    slope_h FLOAT,
+    runoff VARCHAR(30),
+    tfactor INT,
+    drainagecl VARCHAR(30),
+    mu_pct_sum INT
+    );
+ 
+-- #CompAcres
+CREATE TABLE #CompAcres
+(   landunit VARCHAR(20),
+    musym VARCHAR(6),
+    mukey INT,
+    mapunit_acres FLOAT,
+    cokey INT,
+    compname VARCHAR(60),
+    comppct_r INT,
+    majcompflag VARCHAR(3),
+    otherphase VARCHAR(40),
+    localphase VARCHAR(40),
+    compkind VARCHAR(40),
+    slope_l FLOAT,
+    slope_h FLOAT,
+    runoff VARCHAR(30),
+    tfactor INT,
+    drainagecl VARCHAR(30),
+    mu_pct_sum INT,
+    comp_acres FLOAT
+    );
+ 
+-- #CompTexture
+CREATE TABLE #CompTexture
+(   landunit VARCHAR(20),
+    musym VARCHAR(6),
+    mukey INT,
+    mapunit_acres FLOAT,
+    cokey INT,
+    compname VARCHAR(60),
+    comppct_r INT,
+    majcompflag VARCHAR(3),
+    otherphase VARCHAR(40),
+    localphase VARCHAR(40),
+    compkind VARCHAR(40),
+    slope_l FLOAT,
+    slope_h FLOAT,
+    runoff VARCHAR(30),
+    tfactor INT,
+    drainagecl VARCHAR(30),
+    om_l INT,
+    om_h INT,
+    texture VARCHAR(30),
+    comp_acres FLOAT,
+    bedrock_depth INT
+    );
+ 
+-- #CompTexture2
+CREATE TABLE #CompTexture2
+(   landunit VARCHAR(20),
+    compname VARCHAR(60),
+    texture VARCHAR(30),
+    slope_range VARCHAR(10),
+    runoff VARCHAR(30),
+    bedrock_depth INT,
+    tfactor INT,
+    drainagecl VARCHAR(30),
+    om_range VARCHAR(10),
+    predominant_soil_type VARCHAR(60),
+    soil_acres FLOAT
+    );
+ 
+-- #DateStamps table to store survey area datestamps (sacatalog.saverest)
+CREATE TABLE #DateStamps
+    (landunit VARCHAR(20),
+    datestamp VARCHAR(32) )
+;
+ 
+-- #LandunitMetadata table to store landunit metadata (survey area and saverest) which comes from #DateStamps
+CREATE TABLE #LandunitMetadata
+    (landunit VARCHAR(20),
+    soils_metadata VARCHAR(150) )
+;
+ 
+-- End of CREATE TABLE section
+  
+-- Populate #AoiAcres table
+INSERT INTO #AoiAcres (aoiid, landunit, landunit_acres )
+    SELECT  aoiid, landunit,
+    SUM( ROUND( ( ( GEOGRAPHY::STGeomFromWKB(aoigeom.STAsBinary(), 4326 ).STArea() ) / 4046.8564224 ), 3 ) ) AS landunit_acres
+    FROM #AoiTable
+    GROUP BY aoiid, landunit
+;
+
+-- Populate #AoiSoils table with intersected soil polygon geometry
+INSERT INTO #AoiSoils (aoiid, landunit, musym, mukey, soilgeom)
+    SELECT A.aoiid, A.landunit, M.musym, M.mukey, M.mupolygongeo.STIntersection(A.aoigeom ) AS soilgeom
+    FROM mupolygon M, #AoiTable A
+    WHERE mupolygongeo.STIntersects(A.aoigeom) = 1
+;
+ 
+-- #AoiSoils2 is single part polygon
+INSERT INTO #AoiSoils2 ( aoiid, landunit, musym, mukey, soilgeom )
+SELECT aoiid, landunit, musym, mukey, soilgeom.STGeometryN(Numbers.n).MakeValid() AS soilgeom
+FROM #AoiSoils AS I
+JOIN Numbers ON Numbers.n <= I.soilgeom.STNumGeometries()
+;
+ 
+-- Populate #AoiSoils3 Soil single-part geometry with landunit attribute
+-- aoiid, landunit, musym, mukey, poly_acres, soilgeog
+INSERT INTO #AoiSoils3
+    SELECT aoiid, landunit, musym, mukey, ROUND((( GEOGRAPHY::STGeomFromWKB(soilgeom.STAsBinary(), 4326 ).STArea() ) / 4046.8564224 ), 3 ) AS poly_acres, GEOGRAPHY::STGeomFromWKB(soilgeom.STAsBinary(), 4326 ) AS soilgeog
+    FROM #AoiSoils2
+;
+ 
+-- Populate #MapunitTbl table
+-- should I be using AoiSoils2 below?
+--
+INSERT INTO #MapunitTbl ( areasymbol, spatialver, musym, muname, mukind, lkey, mukey )
+    SELECT DISTINCT L.areasymbol, S.spatialversion AS spatialver, mu.musym, muname, mukind, mu.lkey, mu.mukey
+    FROM mapunit mu
+    INNER JOIN #AoiSoils AS AOIS ON mu.mukey = AOIS.mukey
+    INNER JOIN legend AS L ON mu.lkey = L.lkey
+    INNER JOIN saspatialver AS S ON L.areasymbol = S.areasymbol
+    ORDER BY areasymbol, mukey
+;
+ 
+-- Populate  #LuMuAcres soil map unit acres, aggregated by mukey (merges polygons together)
+INSERT INTO  #LuMuAcres
+    SELECT DISTINCT M1.aoiid, M1.landunit, M1.musym, M1.mukey, 
+    ROUND (SUM (M1.poly_acres) OVER(PARTITION BY M1.landunit, M1.mukey), 3) AS mapunit_acres
+    FROM #AoiSoils3 AS M1
+    GROUP BY M1.aoiid, M1.landunit, M1.musym, M1.mukey, M1.poly_acres
+;
+ 
+-- Populate #M4 table with component level data
+INSERT INTO #M4 
+SELECT M2.aoiid, M2.landunit, M2.musym, M2.mukey, mapunit_acres, CO.cokey, CO.compname, CO.comppct_r, CO.majcompflag,
+CO.otherph as otherphase, CO.localphase, CO.compkind, slope_l, slope_h, runoff, tfact AS tfactor, drainagecl, 
+SUM (CO.comppct_r) OVER(PARTITION BY M2.landunit, M2.mukey) AS mu_pct_sum
+FROM  #LuMuAcres AS M2
+INNER JOIN component AS CO ON CO.mukey = M2.mukey AND CO.majcompflag = 'Yes'
+GROUP BY M2.aoiid, M2.landunit, M2.musym, M2.mukey, mapunit_acres, CO.cokey, compname, comppct_r, majcompflag, otherph, localphase, compkind, slope_l, slope_h, drainagecl, runoff, tfact
+ORDER BY M2.landunit, M2.mukey, CO.comppct_r DESC
+;
+ 
+-- Spatial. Soil Map-landunit intersection returned as WKT geometry
+SELECT landunit, MU.areasymbol, MU.spatialver, MU.musym, MU.muname, AS3.mukey, poly_acres, soilgeog.STAsText() AS wktgeom
+   FROM #AoiSoils3 AS3
+   INNER JOIN #MapunitTbl MU ON AS3.mukey = MU.mukey
+   ORDER BY AS3.landunit, AS3.mukey
+;
+ 
+SELECT landunit, MU.areasymbol, MU.spatialver, MU.musym, MU.muname, AS2.mukey, SUM(poly_acres) AS mapunit_acres
+    FROM #AoiSoils3 AS2
+    INNER JOIN #MapunitTbl MU ON AS2.mukey = MU.mukey
+    GROUP BY landunit, AS2.mukey, MU.musym, MU.muname, areasymbol, spatialver
+    ORDER BY landunit, mapunit_acres DESC, AS2.mukey ASC
+;
+ 
+INSERT INTO #CompAcres
+SELECT landunit, musym, mukey, mapunit_acres, cokey, compname, comppct_r, majcompflag, otherphase, localphase, compkind, slope_l, slope_h, runoff, tfactor, drainagecl, mu_pct_sum, 
+ROUND(((comppct_r * mapunit_acres) / mu_pct_sum), 2) AS comp_acres
+FROM #M4 M
+ORDER BY landunit, mukey, comppct_r DESC
+;
+ 
+INSERT INTO #CompTexture
+SELECT landunit, musym, C.mukey, mapunit_acres, C.cokey, compname, comppct_r, majcompflag,
+otherphase, localphase, compkind, slope_l, slope_h, runoff, tfactor, drainagecl,
+om_l, om_h, texture, comp_acres, (SELECT TOP 1 resdept_r FROM corestrictions X WHERE C.cokey = X.cokey AND reskind LIKE '%bedrock' ORDER BY resdept_r ASC) AS bedrock_depth
+FROM #CompAcres C
+LEFT OUTER JOIN corestrictions R ON C.cokey = R.cokey 
+LEFT OUTER JOIN chorizon H ON C.cokey = H.cokey AND hzdept_r = 0
+LEFT OUTER JOIN chtexturegrp G ON H.chkey = G.chkey AND rvindicator = 'Yes'
+ORDER BY landunit, compname, otherphase, localphase
+;
+ 
+INSERT INTO #CompTexture2
+SELECT DISTINCT landunit, compname, texture, (CAST(slope_l AS VARCHAR(3)) + '-' + CAST(slope_h AS VARCHAR(3)) + '%') AS slope_range,
+runoff, bedrock_depth, tfactor, drainagecl, (CAST(om_l AS VARCHAR(3)) + '-' + CAST(om_h AS VARCHAR(3)) + '%') AS om_range,
+(CT.compname + ' ' + CT.texture + ' (' + RIGHT ( M.areasymbol, 3 ) + ' ' + CT.musym + ' ' + CAST(CT.slope_l AS VARCHAR(3) ) + '-' + CAST ( CT.slope_h AS VARCHAR(3) ) + '%)' ) AS predominant_soil_type,
+SUM(comp_acres) OVER(PARTITION BY landunit, compname, otherphase, localphase, slope_l, slope_h) AS soil_acres
+FROM #CompTexture CT
+INNER JOIN #MapunitTbl M ON CT.mukey = M.mukey
+ORDER BY landunit, soil_acres DESC
+;
+ 
+WITH predominant_soil AS 
+( SELECT *, ROW_NUMBER() OVER (PARTITION BY landunit ORDER BY soil_acres DESC) AS dom_soil
+  FROM #CompTexture2
+)
+SELECT landunit, compname, texture, slope_range, runoff, bedrock_depth, tfactor, drainagecl, om_range, predominant_soil_type, soil_acres
+FROM predominant_soil
+WHERE dom_soil = 1
+;
+ 
+-- END OF QUERIES
+-- ************************************************************************************************
