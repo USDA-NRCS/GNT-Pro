@@ -1,2 +1,2 @@
-# GNT-Pro
-NRCS template in ArcGIS Pro for mapping of setbacks to support creation of data to be transferred to MMP
+# Geospatial Nutrient Tool (GNT)
+ArcGIS Pro toolbox for digitizing features requiring setbacks, calculating spreadable acres, exporting site map(s), and transferring data to Manure Management Planner (MMP).
