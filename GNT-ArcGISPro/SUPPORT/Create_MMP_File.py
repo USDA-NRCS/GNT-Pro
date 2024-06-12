@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from getpass import getuser
 from jinja2 import Environment, FileSystemLoader
 from os import listdir, path, startfile
@@ -87,11 +88,17 @@ try:
     i = 1
     with SearchCursor(gnt_layer, fields) as cursor:
         for row in cursor:
+            try:
+                size = Decimal(str(row[2]))
+                spread_size = Decimal(str(row[3]))
+            except Exception:
+                AddMsgAndPrint('There is a problem with either Size or SpreadSize for one or more Fields. Exiting...', 2, textFilePath)
+                exit()
             gnt_fields[i] = {
                 fields[0]: row[0] if row[0] else '',
                 fields[1]: row[1] if row[1] else '',
-                fields[2]: round(row[2], 1) if row[2] else '',
-                fields[3]: round(row[3], 1) if row[3] else '', #NOTE: MMP throws error if SpreadSize is 0. It says must be greater than 0.1, but what if entire field is not spreadable?
+                fields[2]: round(size, 1) if row[2] else '',
+                fields[3]: round(spread_size, 1) if row[3] else '', #NOTE: MMP throws error if SpreadSize is 0. It says must be greater than 0.1, but what if entire field is not spreadable?
                 fields[4]: f"{row[4]}_1" if row[4] else '', #NOTE: ArcMap tool is hardcoding _1, but some of the .mms files have other numbers?
                 fields[5]: row[5] if row[5] else '',
                 fields[6]: row[6] if row[6] else '',
@@ -110,7 +117,7 @@ try:
             mmp_folder = path.join(install_folder, folder)
     
     if mmp_version is None or mmp_folder is None:
-        AddMsgAndPrint(f"Failed to locate MMP software install location. Expected to be in {install_folder}. Exiting...", 2)
+        AddMsgAndPrint(f"Failed to locate MMP software install location. Expected to be in {install_folder}. Exiting...", 2, textFilePath)
         exit()
     
     # Locate state specific mmi and mms files and get RevDate values
@@ -118,7 +125,7 @@ try:
     mms_file = path.join(mmp_folder, 'Lookup', f"{admin_data['State']}.mms")
 
     if not path.isfile(mmi_file) or not path.isfile(mms_file):
-        AddMsgAndPrint('Failed to locate the mmi or mms files for the state. Exiting...', 2)
+        AddMsgAndPrint('Failed to locate the mmi or mms files for the state. Exiting...', 2, textFilePath)
         exit()
 
     mmi_RevDate = None
@@ -138,7 +145,7 @@ try:
                 break
 
     if mmi_RevDate is None or mms_RevDate is None:
-        AddMsgAndPrint('Failed to retrieve RevDate from state mmi or mms files. Exiting...', 2)
+        AddMsgAndPrint('Failed to retrieve RevDate from state mmi or mms files. Exiting...', 2, textFilePath)
         exit()
 
     ### Write Data to MMP File ###
@@ -155,7 +162,7 @@ try:
     try:
         startfile(outputMMPFile)
     except:
-        AddMsgAndPrint('Failed to launch MMP', 2)
+        AddMsgAndPrint('Failed to launch MMP', 2, textFilePath)
 
 
 except SystemExit:
