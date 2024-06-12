@@ -296,6 +296,8 @@ def RunSDA_Queries(sda_url, sQuery, gdb, fd, utmCS, textFilePath):
                 # Get column names and column metadata from first two list objects
                 columnList = dataList.pop(0)
                 columnInfo = dataList.pop(0)
+                # Hack to increase field length of 'musym' in output feature class
+                columnInfo[3] = columnInfo[3].replace('ColumnSize=6', 'ColumnSize=12')
                 # columnNames = [fld.encode('ascii') for fld in columnList] NOTE: This throws error from Pro
                 columnNames = [fld for fld in columnList]
 
@@ -318,7 +320,8 @@ def RunSDA_Queries(sda_url, sQuery, gdb, fd, utmCS, textFilePath):
                     SetProgressorLabel(f"Creating new table: {newTableName}")
                     CreateTable(gdb, newTableName)
                     tableList.append(newTableName)
-
+                # AddMsgAndPrint(columnNames)
+                # AddMsgAndPrint(columnInfo)
                 newFields = AddNewFields(newTable, columnNames, columnInfo)
 
                 # Output UTM geometry from geographic WKT
@@ -459,6 +462,11 @@ try:
     tableList = RunSDA_Queries(SDA_URL, sQuery, gntdataGDB_path, gntdataFD, output_coordinate_system, textFilePath)
     AddMsgAndPrint(f"\nCreated: {tableList}", textFilePath=textFilePath)
 
+    with UpdateCursor(soilunits_path, ['areasymbol', 'musym']) as cur:
+        for row in cur:
+            prefix = str(int(row[0][2:]))
+            row[1] = f"{prefix}_{row[1]}"
+            cur.updateRow(row)
 
     ### Determine Predominant Soil Type by Field ###
     SetProgressorLabel('Determining predominant soil types...')
@@ -470,14 +478,10 @@ try:
     with SearchCursor(soilunits_summarize_path, ['SubID', 'Majority_musym']) as cur:
         for row in cur:
             soil_types[row[0]] = row[1]
-    
-    with SearchCursor(admin_table_path, ['county_code']) as cur:
-        row = cur.next()
-        county_code = str(int(row[0])) #str(int()) removes leading zeros
 
     with UpdateCursor(gnt_layer, ['SubID', 'SoilKey']) as cur:
         for row in cur:
-            row[1] = f"{county_code}_{soil_types[row[0]]}"
+            row[1] = soil_types[row[0]]
             cur.updateRow(row)
 
     # Add soil layer to map
