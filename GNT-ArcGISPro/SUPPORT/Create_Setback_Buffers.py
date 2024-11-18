@@ -165,7 +165,7 @@ try:
 
     ### Adjust Final Map Layers ###
     for lyr in map.listLayers():
-        if lyr.name == 'GNTFieldLayer':
+        if lyr.longName == 'GNTFieldLayer':
             map.removeLayer(lyr)
 
     lyr_name_list = [lyr.longName for lyr in map.listLayers()]
@@ -173,11 +173,11 @@ try:
     addLyrxByConnectionProperties(map, lyr_name_list, setback_buffer_lyrx, gntdataGDB_path)
 
     for lyr in map.listLayers():
-        if lyr.name == 'Setback_Point':
+        if lyr.longName == 'Setback_Point':
             lyr.visible = False
-        if lyr.name == 'Setback_Line':
+        if lyr.longName == 'Setback_Line':
             lyr.visible = False
-        if lyr.name == 'Setback_Polygon':
+        if lyr.longName == 'Setback_Polygon':
             lyr.visible = False
 
 
