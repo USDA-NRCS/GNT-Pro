@@ -489,7 +489,7 @@ try:
     AddMsgAndPrint('\nAdding soil layer to map...', textFilePath=textFilePath)
     map.addDataFromPath(soilunits_path)
     for lyr in map.listLayers():
-        if lyr.name == 'SoilMap_by_Landunit':
+        if lyr.longName == 'SoilMap_by_Landunit':
             lyr.visible = False
 
 
