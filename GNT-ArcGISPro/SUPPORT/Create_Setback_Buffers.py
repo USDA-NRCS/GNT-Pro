@@ -150,7 +150,7 @@ try:
     
     with SearchCursor(erased_fields, fields) as cursor:
         for row in cursor:
-            spreadable[row[0]] = row[1] #round(row[1], 1)
+            spreadable[row[0]] = round(row[1], 2)
 
     with UpdateCursor(gnt_layer, fields) as cursor:
         for row in cursor:
